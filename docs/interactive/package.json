@@ -1,0 +1,41 @@
+{
+  "name": "kpi-productivity-docs",
+  "version": "1.0.0",
+  "description": "Interactive documentation interface for KPI Productivity API",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "docs:validate": "node scripts/validate.js",
+    "docs:update": "node scripts/update-docs.js",
+    "docs:deploy": "./scripts/deploy.sh"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.1",
+    "axios": "^1.6.0",
+    "prismjs": "^1.29.0",
+    "react-syntax-highlighter": "^15.5.0",
+    "fuse.js": "^7.0.0",
+    "lucide-react": "^0.263.1",
+    "clsx": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@types/prismjs": "^1.26.0",
+    "@types/react-syntax-highlighter": "^15.5.7",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
+  }
+}

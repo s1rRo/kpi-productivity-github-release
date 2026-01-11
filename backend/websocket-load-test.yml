@@ -1,0 +1,286 @@
+# WebSocket Load Testing Configuration for Socket.IO
+# Tests scalability up to 99 concurrent connections (team size limit)
+
+config:
+  target: 'http://localhost:3001'
+  phases:
+    # Warm-up phase
+    - duration: 30
+      arrivalRate: 5
+      name: "Warm-up"
+    
+    # Gradual ramp-up to test team scalability
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 25
+      name: "Ramp-up to 25 users"
+    
+    # Test medium team size (50 users)
+    - duration: 120
+      arrivalRate: 25
+      rampTo: 50
+      name: "Medium team load (50 users)"
+    
+    # Test large team size (99 users - maximum)
+    - duration: 180
+      arrivalRate: 50
+      rampTo: 99
+      name: "Maximum team load (99 users)"
+    
+    # Sustained load test
+    - duration: 300
+      arrivalRate: 99
+      name: "Sustained maximum load"
+    
+    # Cool-down
+    - duration: 60
+      arrivalRate: 99
+      rampTo: 10
+      name: "Cool-down"
+
+  # Socket.IO specific configuration
+  socketio:
+    transports: ['websocket']
+    upgrade: true
+    rememberUpgrade: true
+
+  # Performance thresholds
+  ensure:
+    # Connection establishment should be fast
+    - http.response_time.p95: 500
+    - http.response_time.p99: 1000
+    
+    # WebSocket message latency should be low
+    - socketio.response_time.p95: 100
+    - socketio.response_time.p99: 250
+    
+    # Error rate should be minimal
+    - http.codes.200: 95
+    - socketio.errors: 1
+
+  # Metrics collection
+  metrics:
+    - name: "websocket_connections"
+      unit: "count"
+    - name: "message_throughput"
+      unit: "messages/sec"
+    - name: "team_leaderboard_updates"
+      unit: "updates/sec"
+    - name: "friend_activity_notifications"
+      unit: "notifications/sec"
+
+scenarios:
+  # Test team member joining and participating
+  - name: "Team Member Simulation"
+    weight: 60
+    engine: socketio
+    flow:
+      # Authentication and connection
+      - emit:
+          channel: "authenticate"
+          data:
+            token: "{{ $randomString() }}"
+      
+      # Join team leaderboard
+      - emit:
+          channel: "subscribe:leaderboard"
+          data:
+            teamId: "team-{{ $randomInt(1, 10) }}"
+      
+      # Simulate periodic goal progress updates
+      - loop:
+          count: 10
+          over:
+            - think: 5
+            - emit:
+                channel: "team_goal:progress_update"
+                data:
+                  teamId: "team-{{ $randomInt(1, 10) }}"
+                  goalId: "goal-{{ $randomInt(1, 5) }}"
+                  userId: "user-{{ $randomString() }}"
+                  currentValue: "{{ $randomInt(1, 100) }}"
+            
+            # Listen for leaderboard updates
+            - wait:
+                for: "leaderboard:update"
+                timeout: 2000
+      
+      # Unsubscribe and disconnect
+      - emit:
+          channel: "unsubscribe:leaderboard"
+          data:
+            teamId: "team-{{ $randomInt(1, 10) }}"
+
+  # Test friend activity simulation
+  - name: "Friend Activity Simulation"
+    weight: 30
+    engine: socketio
+    flow:
+      # Authentication
+      - emit:
+          channel: "authenticate"
+          data:
+            token: "{{ $randomString() }}"
+      
+      # Subscribe to friend activity
+      - emit:
+          channel: "subscribe:friend_activity"
+      
+      # Simulate progress updates that friends will see
+      - loop:
+          count: 8
+          over:
+            - think: 3
+            - emit:
+                channel: "progress:update"
+                data:
+                  type: "{{ $randomItem(['kpi', 'goal', 'habit']) }}"
+                  value: "{{ $randomInt(1, 150) }}"
+                  metadata:
+                    habitName: "{{ $randomItem(['Exercise', 'Reading', 'Work', 'English']) }}"
+            
+            # Listen for friend notifications
+            - wait:
+                for: "friend:progress_update"
+                timeout: 1000
+                optional: true
+
+  # Test support message system
+  - name: "Support Messages Simulation"
+    weight: 10
+    engine: socketio
+    flow:
+      # Authentication
+      - emit:
+          channel: "authenticate"
+          data:
+            token: "{{ $randomString() }}"
+      
+      # Send support messages
+      - loop:
+          count: 5
+          over:
+            - think: 8
+            - emit:
+                channel: "support:send"
+                data:
+                  receiverId: "user-{{ $randomString() }}"
+                  message: "{{ $randomItem(['Great job!', 'Keep it up!', 'You can do it!', 'Awesome progress!']) }}"
+                  type: "{{ $randomItem(['support', 'congratulation', 'motivation']) }}"
+            
+            # Listen for message confirmations
+            - wait:
+                for: "support:message_sent"
+                timeout: 1000
+
+# Custom functions for realistic data generation
+functions:
+  generateTeamGoalProgress:
+    - set:
+        teamId: "team-{{ $randomInt(1, 10) }}"
+        goalId: "goal-{{ $randomInt(1, 5) }}"
+        userId: "user-{{ $uuid() }}"
+        currentValue: "{{ $randomInt(1, 100) }}"
+
+  generateProgressUpdate:
+    - set:
+        type: "{{ $randomItem(['kpi', 'goal', 'habit']) }}"
+        value: "{{ $randomInt(50, 150) }}"
+        metadata:
+          habitName: "{{ $randomItem(['Exercise', 'Reading', 'Work', 'English', 'Sleep']) }}"
+          duration: "{{ $randomInt(15, 120) }}"
+
+# Test-specific scenarios for edge cases
+scenarios:
+  # Test rapid connection/disconnection (connection churn)
+  - name: "Connection Churn Test"
+    weight: 5
+    engine: socketio
+    flow:
+      - emit:
+          channel: "authenticate"
+          data:
+            token: "{{ $randomString() }}"
+      - think: 1
+      - disconnect: {}
+      - think: 2
+      - connect: {}
+
+  # Test message flooding (stress test)
+  - name: "Message Flood Test"
+    weight: 5
+    engine: socketio
+    flow:
+      - emit:
+          channel: "authenticate"
+          data:
+            token: "{{ $randomString() }}"
+      
+      # Rapid-fire messages to test rate limiting
+      - loop:
+          count: 50
+          over:
+            - emit:
+                channel: "progress:update"
+                data:
+                  type: "kpi"
+                  value: "{{ $randomInt(1, 150) }}"
+            - think: 0.1
+
+# Monitoring and alerting
+monitoring:
+  # Connection metrics
+  - metric: "socketio.connections.active"
+    threshold: 99
+    alert: "Maximum concurrent connections reached"
+  
+  # Message throughput
+  - metric: "socketio.messages.sent_per_second"
+    threshold: 1000
+    alert: "High message throughput detected"
+  
+  # Error rates
+  - metric: "socketio.errors.rate"
+    threshold: 5
+    alert: "High error rate in WebSocket connections"
+  
+  # Memory usage (if available)
+  - metric: "system.memory.usage"
+    threshold: 80
+    alert: "High memory usage during load test"
+
+# Post-test validation
+validation:
+  # Ensure all connections were handled
+  - check: "socketio.connections.established"
+    expect: "> 0"
+  
+  # Ensure message delivery
+  - check: "socketio.messages.delivered"
+    expect: "> 0"
+  
+  # Ensure low error rate
+  - check: "socketio.errors.total"
+    expect: "< 100"
+
+# Reporting configuration
+reporting:
+  output:
+    - type: "json"
+      path: "./load-test-results/websocket-results.json"
+    - type: "html"
+      path: "./load-test-results/websocket-report.html"
+  
+  # Custom metrics to track
+  custom_metrics:
+    - name: "team_scalability_score"
+      description: "How well the system handles team-sized loads"
+      calculation: "socketio.connections.max / 99 * 100"
+    
+    - name: "real_time_performance"
+      description: "Real-time message delivery performance"
+      calculation: "socketio.response_time.p95"
+    
+    - name: "connection_stability"
+      description: "Connection stability under load"
+      calculation: "(socketio.connections.established - socketio.connections.dropped) / socketio.connections.established * 100"

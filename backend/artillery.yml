@@ -1,0 +1,91 @@
+config:
+  target: 'http://localhost:3001'
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 50
+      name: "Load test"
+    - duration: 60
+      arrivalRate: 100
+      name: "Stress test"
+  defaults:
+    headers:
+      Authorization: 'Bearer {{ $randomString() }}'
+      Content-Type: 'application/json'
+
+scenarios:
+  - name: "Health Check"
+    weight: 10
+    flow:
+      - get:
+          url: "/health"
+          expect:
+            - statusCode: 200
+
+  - name: "Get Habits"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/habits"
+          expect:
+            - statusCode: 200
+            - hasHeader: "content-type"
+
+  - name: "KPI Calculation"
+    weight: 30
+    flow:
+      - post:
+          url: "/api/kpi/calculate"
+          json:
+            habitRecords:
+              - habitId: "habit-1"
+                actualMinutes: 60
+                qualityScore: 4
+            tasks:
+              - title: "Test task"
+                priority: "high"
+                completed: true
+                estimatedMinutes: 60
+                actualMinutes: 55
+            revolutPillars:
+              deliverables: 80
+              skills: 75
+              culture: 85
+          expect:
+            - statusCode: 200
+            - hasProperty: "totalKPI"
+
+  - name: "Analytics Summary"
+    weight: 25
+    flow:
+      - get:
+          url: "/api/analytics/summary?period=month"
+          expect:
+            - statusCode: 200
+            - hasProperty: "averageKPI"
+
+  - name: "Create Daily Record"
+    weight: 15
+    flow:
+      - post:
+          url: "/api/daily-records"
+          json:
+            date: "{{ $randomString() }}"
+            habitRecords:
+              - habitId: "habit-1"
+                actualMinutes: "{{ $randomInt(30, 120) }}"
+                qualityScore: "{{ $randomInt(1, 5) }}"
+            tasks:
+              - title: "Performance test task"
+                priority: "medium"
+                completed: true
+                estimatedMinutes: 60
+                actualMinutes: "{{ $randomInt(45, 75) }}"
+            revolutPillars:
+              deliverables: "{{ $randomInt(60, 100) }}"
+              skills: "{{ $randomInt(60, 100) }}"
+              culture: "{{ $randomInt(60, 100) }}"
+          expect:
+            - statusCode: 201

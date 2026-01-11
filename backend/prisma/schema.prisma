@@ -1,0 +1,358 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  inviteCode String  @unique @default(cuid())
+  privacySettings String @default("{\"showProgress\":true,\"showGoals\":true,\"showAchievements\":true}") // JSON string
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dailyRecords   DailyRecord[]
+  skillTests     SkillTest[]
+  skillProgress  SkillProgress[]
+  goals          Goal[]
+  principlePreferences PrinciplePreference[]
+  
+  // Friends relationships
+  sentFriendRequests     FriendRequest[] @relation("SentRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedRequests")
+  friendsAsUser1         Friendship[]    @relation("User1")
+  friendsAsUser2         Friendship[]    @relation("User2")
+  sentInvites           FriendInvite[]  @relation("InviteSender")
+
+  // Team relationships
+  teamMemberships       TeamMember[]
+
+  @@map("users")
+}
+
+model Habit {
+  id                   String  @id @default(cuid())
+  name                 String
+  targetMinutes        Int
+  category             String?
+  skillLevel           Int     @default(3)
+  eisenhowerQuadrant   String? // Q1, Q2, Q3, Q4
+  isWeekdayOnly        Boolean @default(false)
+  createdAt            DateTime @default(now())
+
+  habitRecords  HabitRecord[]
+  skillTests    SkillTest[]
+  skillProgress SkillProgress[]
+  habitHistory  HabitHistory[]
+  goalHabits    GoalHabit[]
+
+  @@map("habits")
+}
+
+model DailyRecord {
+  id            String    @id @default(cuid())
+  userId        String
+  date          DateTime
+  totalKpi      Float?
+  exceptionType String?
+  exceptionNote String?
+  createdAt     DateTime  @default(now())
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habitRecords HabitRecord[]
+  tasks        Task[]
+
+  @@unique([userId, date])
+  @@map("daily_records")
+}
+
+model HabitRecord {
+  id                      String  @id @default(cuid())
+  dailyRecordId           String
+  habitId                 String
+  actualMinutes           Int
+  qualityScore            Int?    // 1-5
+  efficiencyCoefficients  String?   // JSON as string for SQLite
+  createdAt               DateTime @default(now())
+
+  dailyRecord DailyRecord @relation(fields: [dailyRecordId], references: [id], onDelete: Cascade)
+  habit       Habit       @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@map("habit_records")
+}
+
+model Task {
+  id              String   @id @default(cuid())
+  dailyRecordId   String
+  title           String
+  priority        String   // high, medium, low
+  completed       Boolean  @default(false)
+  estimatedMinutes Int?
+  actualMinutes   Int?
+  createdAt       DateTime @default(now())
+
+  dailyRecord DailyRecord @relation(fields: [dailyRecordId], references: [id], onDelete: Cascade)
+
+  @@map("tasks")
+}
+
+model SkillTest {
+  id          String   @id @default(cuid())
+  userId      String
+  habitId     String
+  month       Int      // 1-12
+  year        Int
+  testType    String   // 'before' | 'after'
+  skillLevel  Int      // 1-5
+  testData    String   // JSON as string for SQLite
+  createdAt   DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, habitId, month, year, testType])
+  @@map("skill_tests")
+}
+
+model SkillProgress {
+  id              String   @id @default(cuid())
+  userId          String
+  habitId         String
+  month           Int      // 1-12
+  year            Int
+  startLevel      Int      // Level at beginning of month
+  endLevel        Int      // Level at end of month
+  deltaPercentage Float    // Calculated progress delta
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, habitId, month, year])
+  @@map("skill_progress")
+}
+
+model HabitHistory {
+  id        String   @id @default(cuid())
+  habitId   String
+  action    String   // 'created', 'updated', 'deleted'
+  changes   String   // JSON string of changes
+  createdAt DateTime @default(now())
+
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@map("habit_history")
+}
+
+model Goal {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  type        String   // 'main', 'sub', 'task'
+  status      String   @default("active") // 'active', 'completed', 'paused'
+  progress    Int      @default(0) // 0-100%
+  positionX   Float    @default(0)
+  positionY   Float    @default(0)
+  color       String   @default("#3B82F6")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user                User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fromConnections     GoalConnection[] @relation("FromGoal")
+  toConnections       GoalConnection[] @relation("ToGoal")
+  generatedHabits     GoalHabit[]
+
+  @@map("goals")
+}
+
+model GoalConnection {
+  id             String   @id @default(cuid())
+  fromGoalId     String
+  toGoalId       String
+  connectionType String   @default("depends_on") // 'depends_on', 'enables', 'blocks'
+  createdAt      DateTime @default(now())
+
+  fromGoal Goal @relation("FromGoal", fields: [fromGoalId], references: [id], onDelete: Cascade)
+  toGoal   Goal @relation("ToGoal", fields: [toGoalId], references: [id], onDelete: Cascade)
+
+  @@unique([fromGoalId, toGoalId])
+  @@map("goal_connections")
+}
+
+model GoalHabit {
+  id        String   @id @default(cuid())
+  goalId    String
+  habitId   String
+  createdAt DateTime @default(now())
+
+  goal  Goal  @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([goalId, habitId])
+  @@map("goal_habits")
+}
+
+model FriendRequest {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  status     String   @default("pending") // 'pending', 'accepted', 'rejected'
+  message    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  sender   User @relation("SentRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@map("friend_requests")
+}
+
+model Friendship {
+  id        String   @id @default(cuid())
+  user1Id   String
+  user2Id   String
+  createdAt DateTime @default(now())
+
+  user1 User @relation("User1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2 User @relation("User2", fields: [user2Id], references: [id], onDelete: Cascade)
+
+  @@unique([user1Id, user2Id])
+  @@map("friendships")
+}
+
+model FriendInvite {
+  id        String   @id @default(cuid())
+  senderId  String
+  email     String
+  inviteCode String  @unique @default(cuid())
+  status    String   @default("pending") // 'pending', 'accepted', 'expired'
+  message   String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  sender User @relation("InviteSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("friend_invites")
+}
+
+model SupportMessage {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  message    String
+  type       String   @default("support") // 'support', 'congratulation', 'motivation'
+  createdAt  DateTime @default(now())
+  readAt     DateTime?
+
+  @@map("support_messages")
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  avatar      String?
+  inviteCode  String   @unique @default(cuid())
+  maxMembers  Int      @default(99)
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members     TeamMember[]
+  goals       TeamGoal[]
+  invites     TeamInvite[]
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  teamId    String
+  userId    String
+  role      String   @default("member") // 'leader', 'deputy', 'member'
+  joinedAt  DateTime @default(now())
+  isActive  Boolean  @default(true)
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@map("team_members")
+}
+
+model TeamGoal {
+  id          String   @id @default(cuid())
+  teamId      String
+  title       String
+  description String?
+  targetValue Int      // Target value for the goal
+  unit        String   @default("points") // 'points', 'hours', 'days', etc.
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  team     Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  progress TeamGoalProgress[]
+
+  @@map("team_goals")
+}
+
+model TeamGoalProgress {
+  id           String   @id @default(cuid())
+  teamGoalId   String
+  userId       String
+  currentValue Int      @default(0)
+  percentage   Float    @default(0) // Calculated percentage
+  lastUpdated  DateTime @default(now())
+
+  teamGoal TeamGoal @relation(fields: [teamGoalId], references: [id], onDelete: Cascade)
+
+  @@unique([teamGoalId, userId])
+  @@map("team_goal_progress")
+}
+
+model TeamInvite {
+  id         String   @id @default(cuid())
+  teamId     String
+  senderId   String
+  email      String?
+  inviteCode String   @unique @default(cuid())
+  status     String   @default("pending") // 'pending', 'accepted', 'rejected', 'expired'
+  message    String?
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@map("team_invites")
+}
+
+model PrinciplePreference {
+  id              String   @id @default(cuid())
+  userId          String
+  principleId     String
+  applied         Boolean  @default(false)
+  appliedToHabits String   @default("[]") // JSON array of habit IDs
+  usageCount      Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, principleId])
+  @@map("principle_preferences")
+}

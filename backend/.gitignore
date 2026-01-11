@@ -1,0 +1,8 @@
+# Environment variables
+.env
+
+# Build output
+dist/
+
+# Prisma
+prisma/migrations/dev.db*

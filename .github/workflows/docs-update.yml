@@ -1,0 +1,155 @@
+name: Documentation Update
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/src/routes/**'
+      - 'backend/src/services/documentationGenerator.ts'
+      - 'docs/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'backend/src/routes/**'
+      - 'backend/src/services/documentationGenerator.ts'
+      - 'docs/**'
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          backend/package-lock.json
+          docs/interactive/package-lock.json
+
+    - name: Install backend dependencies
+      run: |
+        cd backend
+        npm ci
+
+    - name: Install documentation dependencies
+      run: |
+        cd docs/interactive
+        npm ci
+
+    - name: Generate API documentation
+      run: |
+        cd backend
+        npm run docs:generate || echo "Documentation generation completed with warnings"
+
+    - name: Update documentation
+      run: |
+        cd docs/interactive
+        npm run docs:update
+
+    - name: Validate documentation
+      run: |
+        cd docs/interactive
+        npm run docs:validate
+
+    - name: Build documentation site
+      run: |
+        cd docs/interactive
+        npm run build
+
+    - name: Check for changes
+      id: verify-changed-files
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Commit documentation updates
+      if: steps.verify-changed-files.outputs.changed == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "docs: automatic documentation update [skip ci]" || exit 0
+
+    - name: Push changes
+      if: steps.verify-changed-files.outputs.changed == 'true'
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main' && steps.verify-changed-files.outputs.changed == 'true'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/interactive/dist
+        destination_dir: docs
+
+  validate-only:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: docs/interactive/package-lock.json
+
+    - name: Install documentation dependencies
+      run: |
+        cd docs/interactive
+        npm ci
+
+    - name: Validate documentation
+      run: |
+        cd docs/interactive
+        npm run docs:validate
+
+    - name: Build documentation site
+      run: |
+        cd docs/interactive
+        npm run build
+
+    - name: Comment PR
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '❌ Documentation validation failed. Please check the logs and fix any issues before merging.'
+          })
+
+    - name: Comment PR Success
+      if: success()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '✅ Documentation validation passed successfully!'
+          })

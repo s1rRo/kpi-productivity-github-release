@@ -1,0 +1,1005 @@
+{
+  "summary": {
+    "total": 18,
+    "passed": 9,
+    "failed": 0,
+    "missing": 0,
+    "mismatched": 9
+  },
+  "results": [
+    {
+      "endpoint": "/auth/register",
+      "method": "POST",
+      "status": "PASS",
+      "expectedStatus": 201,
+      "actualStatus": 201,
+      "actualResponse": {
+        "message": "User created successfully",
+        "user": {
+          "id": "cmk796be60000wjr0o6xavviz",
+          "email": "test-register-1767985924482@example.com",
+          "name": "Test User"
+        },
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWs3OTZiZTYwMDAwd2pyMG82eGF2dml6IiwiaWF0IjoxNzY3OTg1OTMxLCJleHAiOjE3Njg1OTA3MzF9.Bb1Ps205kKNcFGhPpAEryYNLmWPA0DSwRmnmSOPXM1U"
+      }
+    },
+    {
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "status": "MISMATCH",
+      "expectedStatus": 200,
+      "actualStatus": 401,
+      "actualResponse": {
+        "error": "Invalid credentials"
+      },
+      "error": "Expected status 200, got 401"
+    },
+    {
+      "endpoint": "/habits",
+      "method": "GET",
+      "status": "MISMATCH",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "actualResponse": {
+        "habits": [
+          {
+            "id": "cmk6x0dnl0002gm5nlvl8u9o4",
+            "name": "Сон",
+            "targetMinutes": 480,
+            "category": "health",
+            "skillLevel": 3,
+            "eisenhowerQuadrant": "Q2",
+            "isWeekdayOnly": false
+          },
+          {
+            "id": "cmk6x0dnl0003gm5narpk1nk7",
+            "name": "Спорт",
+            "targetMinutes": 60,
+            "category": "health",
+            "skillLevel": 3,
+            "eisenhowerQuadrant": "Q2",
+            "isWeekdayOnly": false
+          },
+          {
+            "id": "cmk6x0dnl0004gm5n0abdf4z9",
+            "name": "Английский",
+            "targetMinutes": 60,
+            "category": "skills",
+            "skillLevel": 2,
+            "eisenhowerQuadrant": "Q2",
+            "isWeekdayOnly": false
+          },
+          {
+            "id": "cmk6x0dnl0005gm5n18pmzzms",
+            "name": "Чтение",
+            "targetMinutes": 30,
+            "category": "learning",
+            "skillLevel": 3,
+            "eisenhowerQuadrant": "Q2",
+            "isWeekdayOnly": false
+          },
+          {
+            "id": "cmk6x0dnl0006gm5nordkkfx0",
+            "name": "Работа",
+            "targetMinutes": 360,
+            "category": "career",
+            "skillLevel": 4,
+            "eisenhowerQuadrant": "Q1",
+            "isWeekdayOnly": true
+          },
+          {
+            "id": "cmk6x0dnl0007gm5n9glvhzkk",
+            "name": "Отдых",
+            "targetMinutes": 180,
+            "category": "recovery",
+            "skillLevel": 3,
+            "eisenhowerQuadrant": "Q3",
+            "isWeekdayOnly": false
+          },
+          {
+            "id": "cmk6x0dnl0008gm5nn1u0ut3c",
+            "name": "Права",
+            "targetMinutes": 20,
+            "category": "skills",
+            "skillLevel": 1,
+            "eisenhowerQuadrant": "Q2",
+            "isWeekdayOnly": false
+          },
+          {
+            "id": "cmk6x0dnl0009gm5ns2l5s3po",
+            "name": "Блог в X",
+            "targetMinutes": 20,
+            "category": "content",
+            "skillLevel": 1,
+            "eisenhowerQuadrant": "Q2",
+            "isWeekdayOnly": false
+          },
+          {
+            "id": "cmk6x0dnl000agm5n5a36lca3",
+            "name": "ИИ",
+            "targetMinutes": 30,
+            "category": "skills",
+            "skillLevel": 1,
+            "eisenhowerQuadrant": "Q2",
+            "isWeekdayOnly": false
+          },
+          {
+            "id": "cmk6x0dnl000bgm5npnc8djwi",
+            "name": "Аналитика",
+            "targetMinutes": 30,
+            "category": "skills",
+            "skillLevel": 3,
+            "eisenhowerQuadrant": "Q2",
+            "isWeekdayOnly": false
+          },
+          {
+            "id": "cmk789kqm000487s3kwv9yv09",
+            "name": "Стратегическое планирование \"Test Goal\"",
+            "targetMinutes": 60,
+            "category": "career",
+            "skillLevel": 4,
+            "eisenhowerQuadrant": "Q2",
+            "isWeekdayOnly": false
+          },
+          {
+            "id": "cmk789kre000787s3loqd77z3",
+            "name": "Manual Test Habit",
+            "targetMinutes": 60,
+            "category": "skills",
+            "skillLevel": 3,
+            "isWeekdayOnly": false
+          },
+          {
+            "id": "cmk79664g000297375v46biar",
+            "name": "Test Habit",
+            "targetMinutes": 60,
+            "category": "productivity",
+            "skillLevel": 1,
+            "eisenhowerQuadrant": "Q2",
+            "isWeekdayOnly": false
+          }
+        ]
+      },
+      "notes": "Response structure mismatch: habits[0].targetMinutes type mismatch: expected string, got number, habits[0].skillLevel type mismatch: expected string, got number, habits[0].isWeekdayOnly type mismatch: expected string, got boolean"
+    },
+    {
+      "endpoint": "/habits",
+      "method": "POST",
+      "status": "MISMATCH",
+      "expectedStatus": 201,
+      "actualStatus": 400,
+      "actualResponse": {
+        "error": "Invalid input",
+        "details": [
+          {
+            "received": "wellness",
+            "code": "invalid_enum_value",
+            "options": [
+              "health",
+              "skills",
+              "learning",
+              "career",
+              "recovery",
+              "content"
+            ],
+            "path": [
+              "category"
+            ],
+            "message": "Invalid enum value. Expected 'health' | 'skills' | 'learning' | 'career' | 'recovery' | 'content', received 'wellness'"
+          }
+        ]
+      },
+      "error": "Expected status 201, got 400"
+    },
+    {
+      "endpoint": "/habits/cmk79664g000297375v46biar",
+      "method": "PUT",
+      "status": "MISMATCH",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "actualResponse": {
+        "habit": {
+          "id": "cmk79664g000297375v46biar",
+          "name": "Test Habit",
+          "targetMinutes": 45,
+          "category": "productivity",
+          "skillLevel": 2,
+          "eisenhowerQuadrant": "Q2",
+          "isWeekdayOnly": false
+        },
+        "message": "Habit updated successfully",
+        "changes": 2
+      },
+      "notes": "Response structure mismatch: habit.targetMinutes type mismatch: expected string, got number, habit.skillLevel type mismatch: expected string, got number"
+    },
+    {
+      "endpoint": "/habits/cmk79664g000297375v46biar",
+      "method": "DELETE",
+      "status": "PASS",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "actualResponse": {
+        "message": "Habit deleted successfully"
+      }
+    },
+    {
+      "endpoint": "/daily-records",
+      "method": "GET",
+      "status": "MISMATCH",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "actualResponse": {},
+      "notes": "Response structure mismatch: Missing property: dailyRecords"
+    },
+    {
+      "endpoint": "/daily-records",
+      "method": "POST",
+      "status": "MISMATCH",
+      "expectedStatus": 201,
+      "actualStatus": 400,
+      "actualResponse": {
+        "error": "Invalid input",
+        "details": [
+          {
+            "validation": "uuid",
+            "code": "invalid_string",
+            "message": "Invalid habit ID",
+            "path": [
+              "habitRecords",
+              0,
+              "habitId"
+            ]
+          }
+        ]
+      },
+      "error": "Expected status 201, got 400"
+    },
+    {
+      "endpoint": "/kpi/calculate",
+      "method": "POST",
+      "status": "PASS",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "actualResponse": {
+        "data": {
+          "baseScore": 75,
+          "efficiencyCoefficients": {
+            "paretoLaw": 10,
+            "parkinsonLaw": 0,
+            "diminishingReturns": 0,
+            "yerkesDodssonLaw": 0,
+            "pomodoroTechnique": 10,
+            "deepWork": 0,
+            "timeBlocking": 0,
+            "habitStacking": 0,
+            "compoundEffect": 5,
+            "focusBlocks": 0,
+            "productivityBooks": 50
+          },
+          "priorityBonus": 0,
+          "revolutScore": 0,
+          "totalKPI": 150,
+          "productivityBreakdown": {
+            "atomicHabits": 0,
+            "sevenHabits": 15,
+            "deepWork": 0,
+            "oneThingPrinciple": 27,
+            "gettingThingsDone": 0,
+            "eatThatFrog": 6,
+            "powerOfHabit": 0,
+            "mindset": 4,
+            "fourHourWorkweek": 8,
+            "essentialism": 5,
+            "total": 50
+          }
+        },
+        "message": "KPI calculated successfully with productivity books integration"
+      }
+    },
+    {
+      "endpoint": "/kpi/laws",
+      "method": "GET",
+      "status": "PASS",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "actualResponse": {
+        "data": [
+          {
+            "name": "Pareto Principle (80/20 Rule)",
+            "description": "Focus on the 20% of tasks that produce 80% of results",
+            "coefficient": "+10",
+            "trigger": "High-priority task focus ≥80% or Q2 focus ≥60%",
+            "source": "Vilfredo Pareto"
+          },
+          {
+            "name": "Parkinson's Law",
+            "description": "Work expands to fill the time available",
+            "coefficient": "+15 / -10",
+            "trigger": "Completing tasks faster/slower than estimated",
+            "source": "Cyril Northcote Parkinson"
+          },
+          {
+            "name": "Law of Diminishing Returns",
+            "description": "Productivity decreases after optimal work duration",
+            "coefficient": "-15",
+            "trigger": "Working >4 hours without break",
+            "source": "Economic theory"
+          },
+          {
+            "name": "Yerkes-Dodson Law",
+            "description": "Optimal performance occurs at moderate stress levels",
+            "coefficient": "+10",
+            "trigger": "Timely completion of tasks (within 110% of estimate)",
+            "source": "Robert Yerkes & John Dodson"
+          },
+          {
+            "name": "Pomodoro Technique",
+            "description": "Work in focused 25-minute intervals",
+            "coefficient": "+10",
+            "trigger": "Work sessions between 25-50 minutes",
+            "source": "Francesco Cirillo"
+          },
+          {
+            "name": "Deep Work Principle",
+            "description": "Sustained focus produces higher quality output",
+            "coefficient": "+15",
+            "trigger": "Focused work sessions ≥90 minutes",
+            "source": "Cal Newport"
+          },
+          {
+            "name": "Time Blocking",
+            "description": "Planned time allocation improves efficiency",
+            "coefficient": "+10",
+            "trigger": "Actual time within 20% of planned time",
+            "source": "Productivity methodology"
+          },
+          {
+            "name": "Habit Stacking",
+            "description": "Linking habits creates powerful routines",
+            "coefficient": "+10",
+            "trigger": "Completing 5+ habits in a day",
+            "source": "James Clear (Atomic Habits)"
+          },
+          {
+            "name": "Compound Effect",
+            "description": "Small daily improvements create exponential results",
+            "coefficient": "+5",
+            "trigger": "Consistency rate ≥80%",
+            "source": "Darren Hardy"
+          },
+          {
+            "name": "Focus Blocks",
+            "description": "Avoiding context switching maintains mental clarity",
+            "coefficient": "+12",
+            "trigger": "Completing 2+ focused tasks (≥25 min each)",
+            "source": "Attention research"
+          },
+          {
+            "name": "Productivity Books Integration",
+            "description": "Comprehensive integration of 10 key productivity books",
+            "coefficient": "Up to +50",
+            "trigger": "Various principles from Atomic Habits, 7 Habits, Deep Work, The ONE Thing, GTD, Eat That Frog, Power of Habit, Mindset, 4-Hour Workweek, Essentialism",
+            "source": "Multiple productivity experts"
+          }
+        ],
+        "message": "Efficiency laws retrieved successfully"
+      }
+    },
+    {
+      "endpoint": "/analytics/report?startDate=2026-01-01&endDate=2026-01-31&type=month",
+      "method": "GET",
+      "status": "PASS",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "actualResponse": {
+        "data": {
+          "period": {
+            "type": "month"
+          },
+          "summary": {
+            "averageKPI": 0,
+            "totalHours": 0,
+            "completedDays": 0,
+            "totalDays": 31
+          },
+          "forecast": {
+            "period": "next_month",
+            "predictedKPI": 0,
+            "predictedHours": 0,
+            "confidence": 0,
+            "basedOnDays": 0,
+            "compoundGrowthRate": 0
+          },
+          "recommendations": [
+            {
+              "type": "priority_adjustment",
+              "priority": "high",
+              "title": "Focus on Q2 Activities",
+              "description": "Your KPI is below optimal. Increase focus on important but not urgent activities (Q2).",
+              "actionItems": [
+                "Allocate more time to Q2 habits (important, not urgent)",
+                "Reduce time spent on Q3/Q4 activities",
+                "Set specific Q2 goals for the next week"
+              ],
+              "expectedImpact": "Potential 15-30% KPI improvement",
+              "habitIds": [
+                "cmk6x0dnl000bgm5npnc8djwi",
+                "cmk6x0dnl0004gm5n0abdf4z9",
+                "cmk6x0dnl0009gm5ns2l5s3po",
+                "cmk6x0dnl000agm5n5a36lca3",
+                "cmk6x0dnl0008gm5nn1u0ut3c",
+                "cmk6x0dnl0002gm5nlvl8u9o4",
+                "cmk6x0dnl0003gm5narpk1nk7",
+                "cmk789kqm000487s3kwv9yv09",
+                "cmk6x0dnl0005gm5n18pmzzms"
+              ]
+            },
+            {
+              "type": "skill_development",
+              "priority": "medium",
+              "title": "Accelerate Skill Development",
+              "description": "You have skills below level 4. Focus on these for career advancement.",
+              "actionItems": [
+                "Take monthly skill assessments",
+                "Increase practice time for low-level skills",
+                "Find mentors or courses for skill development"
+              ],
+              "expectedImpact": "Improve skills pillar by 20-40%",
+              "habitIds": [
+                "cmk789kre000787s3loqd77z3",
+                "cmk6x0dnl000bgm5npnc8djwi",
+                "cmk6x0dnl0004gm5n0abdf4z9",
+                "cmk6x0dnl000agm5n5a36lca3",
+                "cmk6x0dnl0008gm5nn1u0ut3c"
+              ]
+            }
+          ]
+        },
+        "message": "Analytics report generated successfully"
+      }
+    },
+    {
+      "endpoint": "/analytics/summary?days=30",
+      "method": "GET",
+      "status": "PASS",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "actualResponse": {
+        "data": {
+          "period": "Last 30 days",
+          "averageKPI": 0,
+          "totalHours": 0,
+          "completedDays": 0,
+          "completionRate": 0,
+          "topRecommendation": {
+            "type": "priority_adjustment",
+            "priority": "high",
+            "title": "Focus on Q2 Activities",
+            "description": "Your KPI is below optimal. Increase focus on important but not urgent activities (Q2).",
+            "actionItems": [
+              "Allocate more time to Q2 habits (important, not urgent)",
+              "Reduce time spent on Q3/Q4 activities",
+              "Set specific Q2 goals for the next week"
+            ],
+            "expectedImpact": "Potential 15-30% KPI improvement",
+            "habitIds": [
+              "cmk6x0dnl000bgm5npnc8djwi",
+              "cmk6x0dnl0004gm5n0abdf4z9",
+              "cmk6x0dnl0009gm5ns2l5s3po",
+              "cmk6x0dnl000agm5n5a36lca3",
+              "cmk6x0dnl0008gm5nn1u0ut3c",
+              "cmk6x0dnl0002gm5nlvl8u9o4",
+              "cmk6x0dnl0003gm5narpk1nk7",
+              "cmk789kqm000487s3kwv9yv09",
+              "cmk6x0dnl0005gm5n18pmzzms"
+            ]
+          },
+          "forecast": {
+            "nextMonth": 0,
+            "confidence": 0
+          }
+        },
+        "message": "Analytics summary retrieved successfully"
+      }
+    },
+    {
+      "endpoint": "/skills/tests",
+      "method": "GET",
+      "status": "MISMATCH",
+      "expectedStatus": 200,
+      "actualStatus": 401,
+      "actualResponse": {
+        "error": "User not authenticated"
+      },
+      "error": "Expected status 200, got 401"
+    },
+    {
+      "endpoint": "/skills/progress",
+      "method": "GET",
+      "status": "MISMATCH",
+      "expectedStatus": 200,
+      "actualStatus": 401,
+      "actualResponse": {
+        "error": "User not authenticated"
+      },
+      "error": "Expected status 200, got 401"
+    },
+    {
+      "endpoint": "/exceptions/types",
+      "method": "GET",
+      "status": "PASS",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "actualResponse": {
+        "data": [
+          {
+            "type": "illness",
+            "label": "Болезнь",
+            "description": "Болезнь, плохое самочувствие, восстановление после болезни",
+            "color": "#ef4444",
+            "icon": "🤒"
+          },
+          {
+            "type": "travel",
+            "label": "Перелет/Путешествие",
+            "description": "Перелеты, смена часовых поясов, путешествия",
+            "color": "#3b82f6",
+            "icon": "✈️"
+          },
+          {
+            "type": "emergency",
+            "label": "Форс-мажор",
+            "description": "Экстренные ситуации, неотложные дела, семейные обстоятельства",
+            "color": "#f59e0b",
+            "icon": "🚨"
+          },
+          {
+            "type": "technical",
+            "label": "Технические проблемы",
+            "description": "Проблемы с интернетом, поломка оборудования, системные сбои",
+            "color": "#6b7280",
+            "icon": "🔧"
+          }
+        ],
+        "message": "Exception types retrieved successfully"
+      }
+    },
+    {
+      "endpoint": "/exceptions/mark",
+      "method": "POST",
+      "status": "MISMATCH",
+      "expectedStatus": 201,
+      "actualStatus": 500,
+      "actualResponse": {
+        "error": "Internal server error"
+      },
+      "error": "Expected status 201, got 500"
+    },
+    {
+      "endpoint": "/dashboard/year/2026",
+      "method": "GET",
+      "status": "PASS",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "actualResponse": {
+        "data": {
+          "months": [
+            {
+              "month": 1,
+              "year": 2026,
+              "averageKPI": 0,
+              "totalHours": 0,
+              "completedDays": 0
+            },
+            {
+              "month": 2,
+              "year": 2026,
+              "averageKPI": 0,
+              "totalHours": 0,
+              "completedDays": 0
+            },
+            {
+              "month": 3,
+              "year": 2026,
+              "averageKPI": 0,
+              "totalHours": 0,
+              "completedDays": 0
+            },
+            {
+              "month": 4,
+              "year": 2026,
+              "averageKPI": 0,
+              "totalHours": 0,
+              "completedDays": 0
+            },
+            {
+              "month": 5,
+              "year": 2026,
+              "averageKPI": 0,
+              "totalHours": 0,
+              "completedDays": 0
+            },
+            {
+              "month": 6,
+              "year": 2026,
+              "averageKPI": 0,
+              "totalHours": 0,
+              "completedDays": 0
+            },
+            {
+              "month": 7,
+              "year": 2026,
+              "averageKPI": 0,
+              "totalHours": 0,
+              "completedDays": 0
+            },
+            {
+              "month": 8,
+              "year": 2026,
+              "averageKPI": 0,
+              "totalHours": 0,
+              "completedDays": 0
+            },
+            {
+              "month": 9,
+              "year": 2026,
+              "averageKPI": 0,
+              "totalHours": 0,
+              "completedDays": 0
+            },
+            {
+              "month": 10,
+              "year": 2026,
+              "averageKPI": 0,
+              "totalHours": 0,
+              "completedDays": 0
+            },
+            {
+              "month": 11,
+              "year": 2026,
+              "averageKPI": 0,
+              "totalHours": 0,
+              "completedDays": 0
+            },
+            {
+              "month": 12,
+              "year": 2026,
+              "averageKPI": 0,
+              "totalHours": 0,
+              "completedDays": 0
+            }
+          ],
+          "averageKPI": 0,
+          "totalHours": 0,
+          "totalActivities": 0,
+          "forecast2027": 0
+        },
+        "message": "Year data retrieved successfully"
+      }
+    },
+    {
+      "endpoint": "/dashboard/month/2026/1",
+      "method": "GET",
+      "status": "PASS",
+      "expectedStatus": 200,
+      "actualStatus": 200,
+      "actualResponse": {
+        "data": {
+          "dailyData": [
+            {
+              "day": 1,
+              "date": "2026-01-01",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 2,
+              "date": "2026-01-02",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 3,
+              "date": "2026-01-03",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 4,
+              "date": "2026-01-04",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 5,
+              "date": "2026-01-05",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 6,
+              "date": "2026-01-06",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 7,
+              "date": "2026-01-07",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 8,
+              "date": "2026-01-08",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 9,
+              "date": "2026-01-09",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 10,
+              "date": "2026-01-10",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 11,
+              "date": "2026-01-11",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 12,
+              "date": "2026-01-12",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 13,
+              "date": "2026-01-13",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 14,
+              "date": "2026-01-14",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 15,
+              "date": "2026-01-15",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 16,
+              "date": "2026-01-16",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 17,
+              "date": "2026-01-17",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 18,
+              "date": "2026-01-18",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 19,
+              "date": "2026-01-19",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 20,
+              "date": "2026-01-20",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 21,
+              "date": "2026-01-21",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 22,
+              "date": "2026-01-22",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 23,
+              "date": "2026-01-23",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 24,
+              "date": "2026-01-24",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 25,
+              "date": "2026-01-25",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 26,
+              "date": "2026-01-26",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 27,
+              "date": "2026-01-27",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 28,
+              "date": "2026-01-28",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 29,
+              "date": "2026-01-29",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 30,
+              "date": "2026-01-30",
+              "kpi": 0,
+              "isException": false
+            },
+            {
+              "day": 31,
+              "date": "2026-01-31",
+              "kpi": 0,
+              "isException": false
+            }
+          ],
+          "monthStats": {
+            "averageKPI": 0,
+            "totalHours": 0,
+            "completedDays": 0,
+            "totalDays": 31,
+            "completionRate": 0,
+            "exceptionDays": 0
+          },
+          "month": 1,
+          "year": 2026,
+          "habits": [
+            {
+              "id": "cmk789kre000787s3loqd77z3",
+              "name": "Manual Test Habit",
+              "targetMinutes": 60,
+              "category": "skills",
+              "skillLevel": 3,
+              "isWeekdayOnly": false
+            },
+            {
+              "id": "cmk6x0dnl000bgm5npnc8djwi",
+              "name": "Аналитика",
+              "targetMinutes": 30,
+              "category": "skills",
+              "skillLevel": 3,
+              "eisenhowerQuadrant": "Q2",
+              "isWeekdayOnly": false
+            },
+            {
+              "id": "cmk6x0dnl0004gm5n0abdf4z9",
+              "name": "Английский",
+              "targetMinutes": 60,
+              "category": "skills",
+              "skillLevel": 2,
+              "eisenhowerQuadrant": "Q2",
+              "isWeekdayOnly": false
+            },
+            {
+              "id": "cmk6x0dnl0009gm5ns2l5s3po",
+              "name": "Блог в X",
+              "targetMinutes": 20,
+              "category": "content",
+              "skillLevel": 1,
+              "eisenhowerQuadrant": "Q2",
+              "isWeekdayOnly": false
+            },
+            {
+              "id": "cmk6x0dnl000agm5n5a36lca3",
+              "name": "ИИ",
+              "targetMinutes": 30,
+              "category": "skills",
+              "skillLevel": 1,
+              "eisenhowerQuadrant": "Q2",
+              "isWeekdayOnly": false
+            },
+            {
+              "id": "cmk6x0dnl0007gm5n9glvhzkk",
+              "name": "Отдых",
+              "targetMinutes": 180,
+              "category": "recovery",
+              "skillLevel": 3,
+              "eisenhowerQuadrant": "Q3",
+              "isWeekdayOnly": false
+            },
+            {
+              "id": "cmk6x0dnl0008gm5nn1u0ut3c",
+              "name": "Права",
+              "targetMinutes": 20,
+              "category": "skills",
+              "skillLevel": 1,
+              "eisenhowerQuadrant": "Q2",
+              "isWeekdayOnly": false
+            },
+            {
+              "id": "cmk6x0dnl0006gm5nordkkfx0",
+              "name": "Работа",
+              "targetMinutes": 360,
+              "category": "career",
+              "skillLevel": 4,
+              "eisenhowerQuadrant": "Q1",
+              "isWeekdayOnly": true
+            },
+            {
+              "id": "cmk6x0dnl0002gm5nlvl8u9o4",
+              "name": "Сон",
+              "targetMinutes": 480,
+              "category": "health",
+              "skillLevel": 3,
+              "eisenhowerQuadrant": "Q2",
+              "isWeekdayOnly": false
+            },
+            {
+              "id": "cmk6x0dnl0003gm5narpk1nk7",
+              "name": "Спорт",
+              "targetMinutes": 60,
+              "category": "health",
+              "skillLevel": 3,
+              "eisenhowerQuadrant": "Q2",
+              "isWeekdayOnly": false
+            },
+            {
+              "id": "cmk789kqm000487s3kwv9yv09",
+              "name": "Стратегическое планирование \"Test Goal\"",
+              "targetMinutes": 60,
+              "category": "career",
+              "skillLevel": 4,
+              "eisenhowerQuadrant": "Q2",
+              "isWeekdayOnly": false
+            },
+            {
+              "id": "cmk6x0dnl0005gm5n18pmzzms",
+              "name": "Чтение",
+              "targetMinutes": 30,
+              "category": "learning",
+              "skillLevel": 3,
+              "eisenhowerQuadrant": "Q2",
+              "isWeekdayOnly": false
+            }
+          ]
+        },
+        "message": "Month data retrieved successfully"
+      }
+    }
+  ],
+  "discrepancies": [
+    "GET /habits: Response structure doesn't match documentation - habits[0].targetMinutes type mismatch: expected string, got number, habits[0].skillLevel type mismatch: expected string, got number, habits[0].isWeekdayOnly type mismatch: expected string, got boolean",
+    "PUT /habits/cmk79664g000297375v46biar: Response structure doesn't match documentation - habit.targetMinutes type mismatch: expected string, got number, habit.skillLevel type mismatch: expected string, got number",
+    "GET /daily-records: Response structure doesn't match documentation - Missing property: dailyRecords"
+  ]
+}

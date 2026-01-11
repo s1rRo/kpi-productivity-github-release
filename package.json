@@ -1,0 +1,59 @@
+{
+  "name": "kpi-productivity",
+  "version": "1.0.0",
+  "description": "Comprehensive productivity tracking system with security hardening and interactive documentation",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:gateway\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev", 
+    "dev:gateway": "cd gateway && npm run dev",
+    "dev:docs": "cd docs/interactive && npm run dev",
+    "build": "npm run build:backend && npm run build:frontend && npm run build:gateway && npm run build:docs",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:gateway": "cd gateway && npm run build", 
+    "build:docs": "cd docs/interactive && npm run build",
+    "test": "npm run test:backend && npm run test:gateway",
+    "test:backend": "cd backend && npm test",
+    "test:gateway": "cd gateway && npm test",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install && cd ../gateway && npm install && cd ../docs/interactive && npm install",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:gateway\"",
+    "start:backend": "cd backend && npm start",
+    "start:gateway": "cd gateway && npm start",
+    "docs:validate": "cd docs/interactive && npm run docs:validate",
+    "docs:update": "cd docs/interactive && npm run docs:update",
+    "docs:deploy": "cd docs/interactive && npm run docs:deploy",
+    "security:test": "cd gateway && npm run test:security",
+    "security:audit": "npm audit --audit-level moderate",
+    "deploy:staging": "./scripts/deploy-staging.sh",
+    "deploy:production": "./scripts/deploy-production.sh"
+  },
+  "keywords": [
+    "productivity",
+    "kpi",
+    "habits",
+    "tracking",
+    "analytics",
+    "security",
+    "documentation",
+    "monitoring"
+  ],
+  "author": "KPI Productivity Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/kpi-productivity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/kpi-productivity/issues"
+  },
+  "homepage": "https://github.com/your-username/kpi-productivity#readme"
+}
