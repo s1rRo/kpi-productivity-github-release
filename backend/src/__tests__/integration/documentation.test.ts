@@ -441,7 +441,7 @@ describe('Documentation System Integration Tests', () => {
         expect(response.body.data).toHaveProperty('errors');
         expect(response.body.data.generated).toContain('markdown');
         expect(response.body.data.generated).toContain('json');
-        expect(response.body.data.errors).toHaveLength(0);
+        expect(response.body.data.issues).toHaveLength(0);
 
         // Verify files were created
         expect(fs.existsSync('./docs/test-output/api-documentation.md')).toBe(true);
@@ -486,9 +486,9 @@ describe('Documentation System Integration Tests', () => {
           })
           .expect(200);
 
-        expect(response.body.data.errors.length).toBeGreaterThan(0);
-        expect(response.body.data.errors[0]).toHaveProperty('format');
-        expect(response.body.data.errors[0]).toHaveProperty('error');
+        expect(response.body.data.issues.length).toBeGreaterThan(0);
+        expect(response.body.data.issues[0]).toHaveProperty('format');
+        expect(response.body.data.issues[0]).toHaveProperty('error');
       });
     });
   });

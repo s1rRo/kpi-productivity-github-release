@@ -5,7 +5,6 @@ const redisClient = createClient({
   url: process.env.REDIS_URL || 'redis://localhost:6379',
   socket: {
     connectTimeout: 60000,
-    lazyConnect: true,
     reconnectStrategy: (retries) => {
       // Exponential backoff with max delay of 30 seconds
       const delay = Math.min(retries * 50, 30000);

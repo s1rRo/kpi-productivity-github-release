@@ -12,12 +12,9 @@ export function initializeSentry(app: Express) {
     dsn: process.env.SENTRY_DSN,
     environment: process.env.NODE_ENV || "development",
     integrations: [
-      // Enable HTTP calls tracing
-      new Sentry.Integrations.Http({ tracing: true }),
-      // Enable Express.js middleware tracing
-      new Sentry.Integrations.Express({ app }),
       // Enable profiling
       nodeProfilingIntegration(),
+      // Note: httpIntegration and expressIntegration are now automatic in v10+
     ],
     // Performance Monitoring
     tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
@@ -32,12 +29,12 @@ export function initializeSentry(app: Express) {
         delete event.request.headers.authorization;
         delete event.request.headers.cookie;
       }
-      
+
       // Don't send health check errors
       if (event.request?.url?.includes('/health')) {
         return null;
       }
-      
+
       return event;
     },
     beforeBreadcrumb(breadcrumb) {
@@ -49,22 +46,14 @@ export function initializeSentry(app: Express) {
     },
   });
 
-  // RequestHandler creates a separate execution context, so that all
-  // transactions/spans/breadcrumbs are isolated across requests
-  app.use(Sentry.Handlers.requestHandler());
-  
-  // TracingHandler creates a trace for every incoming request
-  app.use(Sentry.Handlers.tracingHandler());
+  // Note: In Sentry v10+, request handling and tracing are automatic
+  // No need for app.use(Sentry.Handlers.requestHandler()) or app.use(Sentry.Handlers.tracingHandler())
 }
 
 export function setupSentryErrorHandler(app: Express) {
   // The error handler must be registered before any other error middleware and after all controllers
-  app.use(Sentry.Handlers.errorHandler({
-    shouldHandleError(error) {
-      // Capture all 4xx and 5xx errors
-      return error.status >= 400;
-    },
-  }));
+  // In v10+, use setupExpressErrorHandler instead of Handlers.errorHandler
+  Sentry.setupExpressErrorHandler(app);
 }
 
 // Custom error reporting functions
@@ -110,9 +99,9 @@ export const sentryUtils = {
     });
   },
 
-  // Performance monitoring
-  startTransaction: (name: string, op: string) => {
-    return Sentry.startTransaction({ name, op });
+  // Performance monitoring (v10+ uses startSpan instead of startTransaction)
+  startSpan: (name: string, op: string, callback: () => any) => {
+    return Sentry.startSpan({ name, op }, callback);
   },
 
   // Custom tags for filtering

@@ -128,7 +128,7 @@ router.post('/calculate', async (req, res) => {
     if (!validation.isValid) {
       return res.status(400).json({
         error: 'Invalid input data',
-        details: validation.errors
+        details: validation.issues
       } as ApiResponse);
     }
 

@@ -45,7 +45,7 @@ router.get('/', async (req: AuthRequest, res) => {
     if (error.name === 'ZodError') {
       return res.status(400).json({ 
         error: 'Invalid date range', 
-        details: error.errors 
+        details: error.issues 
       });
     }
     console.error('Get daily records error:', error);
@@ -160,7 +160,7 @@ router.post('/', async (req: AuthRequest, res) => {
     if (error.name === 'ZodError') {
       return res.status(400).json({ 
         error: 'Invalid input', 
-        details: error.errors 
+        details: error.issues 
       });
     }
     if (error.message.includes('Efficiency coefficients')) {
@@ -204,7 +204,7 @@ router.put('/:date', async (req: AuthRequest, res) => {
     if (error.name === 'ZodError') {
       return res.status(400).json({ 
         error: 'Invalid input', 
-        details: error.errors 
+        details: error.issues 
       });
     }
     console.error('Update daily record error:', error);

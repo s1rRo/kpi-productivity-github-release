@@ -26,7 +26,7 @@ router.post('/test', async (req: AuthRequest, res) => {
     if (!validation.isValid) {
       return res.status(400).json({ 
         error: 'Validation failed', 
-        details: validation.errors 
+        details: validation.issues 
       });
     }
 

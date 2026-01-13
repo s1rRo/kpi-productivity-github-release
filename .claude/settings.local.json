@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "ask": [
+      "Какие флаги включены ?"
+    ],
+    "allow": [
+      "Bash(npm test:*)"
+    ]
+  }
+}
