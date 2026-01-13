@@ -105,7 +105,7 @@ router.post('/', authenticateToken, async (req: AuthRequest, res) => {
     res.status(201).json({ data: goal });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors });
+      return res.status(400).json({ error: 'Validation error', details: error.issues });
     }
     console.error('Error creating goal:', error);
     res.status(500).json({ error: 'Failed to create goal' });
@@ -148,7 +148,7 @@ router.put('/:id', authenticateToken, async (req: AuthRequest, res) => {
     res.json({ data: goal });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors });
+      return res.status(400).json({ error: 'Validation error', details: error.issues });
     }
     console.error('Error updating goal:', error);
     res.status(500).json({ error: 'Failed to update goal' });
@@ -249,7 +249,7 @@ router.post('/:id/connections', authenticateToken, async (req: AuthRequest, res)
     res.status(201).json({ data: connection });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors });
+      return res.status(400).json({ error: 'Validation error', details: error.issues });
     }
     console.error('Error creating connection:', error);
     res.status(500).json({ error: 'Failed to create connection' });
@@ -336,7 +336,7 @@ router.post('/:id/habits', authenticateToken, async (req: AuthRequest, res) => {
     res.status(201).json({ data: goalHabit });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation error', details: error.errors });
+      return res.status(400).json({ error: 'Validation error', details: error.issues });
     }
     console.error('Error connecting habit to goal:', error);
     res.status(500).json({ error: 'Failed to connect habit to goal' });

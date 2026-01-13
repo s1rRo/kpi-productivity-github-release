@@ -61,7 +61,7 @@ router.post('/register', async (req, res) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.errors });
+      return res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('Registration error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -104,7 +104,7 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.errors });
+      return res.status(400).json({ error: 'Invalid input', details: error.issues });
     }
     console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });

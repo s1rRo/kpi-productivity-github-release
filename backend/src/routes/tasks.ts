@@ -104,7 +104,7 @@ router.post('/', async (req: AuthRequest, res) => {
     if (error.name === 'ZodError') {
       return res.status(400).json({ 
         error: 'Invalid input', 
-        details: error.errors 
+        details: error.issues 
       });
     }
     console.error('Create task error:', error);
@@ -142,7 +142,7 @@ router.put('/:id', async (req: AuthRequest, res) => {
     if (error.name === 'ZodError') {
       return res.status(400).json({ 
         error: 'Invalid input', 
-        details: error.errors 
+        details: error.issues 
       });
     }
     console.error('Update task error:', error);

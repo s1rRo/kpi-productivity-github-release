@@ -489,9 +489,9 @@ export class DocumentationManager {
       const validation = await this.validateDocumentation();
 
       // Check for critical issues
-      if (validation.errors.length > 0) {
+      if (validation.issues.length > 0) {
         status = 'error';
-        issues.push(`${validation.errors.length} validation errors found`);
+        issues.push(`${validation.issues.length} validation errors found`);
       }
 
       // Check for warnings
@@ -540,7 +540,7 @@ export class DocumentationManager {
       try {
         const validation = await this.validateDocumentation();
         if (!validation.isValid) {
-          console.warn('Documentation validation failed:', validation.errors);
+          console.warn('Documentation validation failed:', validation.issues);
         }
       } catch (error) {
         console.error('Scheduled validation failed:', error);

@@ -366,7 +366,7 @@ describe('KPICalculator', () => {
       );
 
       expect(validation.isValid).toBe(true);
-      expect(validation.errors).toHaveLength(0);
+      expect(validation.issues).toHaveLength(0);
     });
 
     test('should reject more than 5 tasks', () => {
@@ -389,7 +389,7 @@ describe('KPICalculator', () => {
       );
 
       expect(validation.isValid).toBe(false);
-      expect(validation.errors).toContain('Maximum 5 tasks allowed per day');
+      expect(validation.issues).toContain('Maximum 5 tasks allowed per day');
     });
 
     test('should validate Revolut pillars range', () => {
@@ -407,7 +407,7 @@ describe('KPICalculator', () => {
       );
 
       expect(validation.isValid).toBe(false);
-      expect(validation.errors.length).toBeGreaterThan(0);
+      expect(validation.issues.length).toBeGreaterThan(0);
     });
   });
 

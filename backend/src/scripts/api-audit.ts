@@ -170,9 +170,9 @@ class APIAuditor {
           
           if (!structureMatch.isValid) {
             result.status = 'MISMATCH';
-            result.notes = `Response structure mismatch: ${structureMatch.errors.join(', ')}`;
+            result.notes = `Response structure mismatch: ${structureMatch.issues.join(', ')}`;
             this.discrepancies.push(
-              `${method} ${endpoint}: Response structure doesn't match documentation - ${structureMatch.errors.join(', ')}`
+              `${method} ${endpoint}: Response structure doesn't match documentation - ${structureMatch.issues.join(', ')}`
             );
           }
         }

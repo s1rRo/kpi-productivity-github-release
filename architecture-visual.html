@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI Productivity - Архитектура системы</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #555;
+        }
+
+        .tab:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .diagram-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .diagram-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .diagram-container h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .info-box {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-box li {
+            padding: 5px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .info-box li:before {
+            content: "✓";
+            color: #667eea;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .tech-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .tech-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .tech-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tech-card li {
+            padding: 5px 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9ff;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin: 2px;
+        }
+
+        .badge.danger {
+            background: #e74c3c;
+        }
+
+        .badge.success {
+            background: #2ecc71;
+        }
+
+        .badge.warning {
+            background: #f39c12;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: white;
+            margin-top: 40px;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .metric-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .metric-card .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 KPI Productivity System</h1>
+            <p class="subtitle">Визуализация архитектуры и компонентов системы</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showDiagram('overview')">Общая архитектура</button>
+            <button class="tab" onclick="showDiagram('dataflow')">Поток данных</button>
+            <button class="tab" onclick="showDiagram('security')">Безопасность</button>
+            <button class="tab" onclick="showDiagram('deployment')">Деплоймент</button>
+            <button class="tab" onclick="showDiagram('scaling')">Масштабирование</button>
+            <button class="tab" onclick="showDiagram('tech')">Технологии</button>
+            <button class="tab" onclick="showDiagram('ports')">Порты и доступ</button>
+        </div>
+
+        <!-- Overview Diagram -->
+        <div id="overview" class="diagram-container active">
+            <h2>Общая архитектура системы</h2>
+            <div class="mermaid">
+graph TB
+    subgraph "Клиент"
+        Browser[🌐 Браузер пользователя]
+    end
+
+    subgraph "Внешний доступ"
+        Nginx[🔒 Nginx + SSL/TLS<br/>Port 443]
+    end
+
+    subgraph "Безопасность"
+        Gateway[🛡️ API Gateway<br/>Port 30002<br/>Rate Limiting<br/>Helmet.js<br/>JWT Validation]
+    end
+
+    subgraph "Приложения"
+        Frontend[⚛️ React Frontend<br/>Port 3000<br/>TypeScript + Vite<br/>Tailwind CSS]
+        Backend[🔧 Node.js Backend<br/>Port 3001<br/>Express + Prisma<br/>Socket.IO]
+        Docs[📚 Документация<br/>Port 3002]
+    end
+
+    subgraph "Базы данных"
+        PostgreSQL[(🗄️ PostgreSQL 15+<br/>Port 5432)]
+        Redis[(⚡ Redis 7+<br/>Port 6379)]
+    end
+
+    subgraph "Мониторинг"
+        Sentry[📊 Sentry<br/>Error Tracking]
+    end
+
+    Browser -->|HTTPS| Nginx
+    Nginx -->|Proxy| Gateway
+    Gateway --> Backend
+    Gateway --> Frontend
+    Gateway --> Docs
+
+    Backend --> PostgreSQL
+    Backend --> Redis
+    Backend --> Sentry
+    Frontend -->|WebSocket| Backend
+
+    style Gateway fill:#ff6b6b
+    style Backend fill:#4ecdc4
+    style Frontend fill:#45b7d1
+    style PostgreSQL fill:#95e1d3
+    style Redis fill:#f38181
+            </div>
+
+            <div class="info-box">
+                <h3>Ключевые особенности архитектуры</h3>
+                <ul>
+                    <li>API Gateway как единственная точка входа для всех запросов</li>
+                    <li>Микросервисная архитектура с разделением frontend и backend</li>
+                    <li>Redis для кэширования и реал-тайм функций через Socket.IO</li>
+                    <li>PostgreSQL с Prisma ORM для типобезопасной работы с данными</li>
+                    <li>Sentry для мониторинга ошибок и производительности</li>
+                    <li>PM2 для управления процессами и кластеризации</li>
+                </ul>
+            </div>
+
+            <div class="metrics">
+                <div class="metric-card">
+                    <div class="label">Целевое время ответа</div>
+                    <div class="number">&lt; 200ms</div>
+                </div>
+                <div class="metric-card">
+                    <div class="label">Доступность</div>
+                    <div class="number">99.9%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="label">Конкурентных пользователей</div>
+                    <div class="number">1000+</div>
+                </div>
+                <div class="metric-card">
+                    <div class="label">Покрытие тестами</div>
+                    <div class="number">&gt; 80%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Flow Diagram -->
+        <div id="dataflow" class="diagram-container">
+            <h2>Поток данных и взаимодействие компонентов</h2>
+            <div class="mermaid">
+sequenceDiagram
+    participant User as 👤 Пользователь
+    participant Nginx as 🔒 Nginx
+    participant GW as 🛡️ Gateway
+    participant BE as 🔧 Backend
+    participant DB as 🗄️ PostgreSQL
+    participant Cache as ⚡ Redis
+
+    User->>Nginx: HTTPS Request
+    Nginx->>GW: Proxy to localhost:30002
+
+    GW->>GW: ✓ Rate Limiting
+    GW->>GW: ✓ Security Headers
+    GW->>BE: Forward Request
+
+    BE->>Cache: Check Cache
+    alt Cache Hit
+        Cache-->>BE: Return Data
+    else Cache Miss
+        BE->>DB: Query Database
+        DB-->>BE: Return Data
+        BE->>Cache: Update Cache
+    end
+
+    BE-->>GW: Response
+    GW-->>Nginx: Response
+    Nginx-->>User: HTTPS Response
+
+    Note over User,BE: WebSocket для реал-тайм
+    User->>BE: WebSocket Connection
+    BE->>Cache: Pub/Sub Subscribe
+    Cache-->>BE: Real-time Event
+    BE-->>User: Push Update
+            </div>
+
+            <div class="info-box">
+                <h3>Процесс обработки запроса</h3>
+                <ul>
+                    <li>Все запросы проходят через Nginx с SSL терминацией</li>
+                    <li>Gateway проверяет rate limits и добавляет security headers</li>
+                    <li>Backend сначала проверяет Redis кэш перед обращением к БД</li>
+                    <li>WebSocket соединения используют Redis Pub/Sub для реал-тайм обновлений</li>
+                    <li>Все ошибки автоматически логируются в Sentry</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Security Diagram -->
+        <div id="security" class="diagram-container">
+            <h2>Многоуровневая система безопасности</h2>
+            <div class="mermaid">
+graph TB
+    Internet[🌍 Интернет]
+
+    subgraph "Firewall Layer"
+        IPTables[🔥 iptables/pfctl<br/>DROP all INPUT<br/>ALLOW localhost<br/>ALLOW :443<br/>ALLOW :30002 from localhost]
+    end
+
+    subgraph "SSL/TLS Layer"
+        Certbot[🔐 Let's Encrypt SSL<br/>Auto-renewal<br/>HTTPS only]
+    end
+
+    subgraph "Application Security"
+        GatewaySec[🛡️ Gateway Security<br/>Rate Limit: 100/15min<br/>Helmet.js<br/>CORS<br/>Input Validation]
+
+        BackendSec[🔒 Backend Security<br/>JWT Auth<br/>bcrypt<br/>Prisma ORM<br/>XSS Protection]
+    end
+
+    Internet -->|HTTPS| IPTables
+    IPTables -->|:443| Certbot
+    Certbot -->|SSL| GatewaySec
+    GatewaySec -->|localhost| BackendSec
+
+    style IPTables fill:#ff6b6b
+    style Certbot fill:#feca57
+    style GatewaySec fill:#ff9ff3
+    style BackendSec fill:#48dbfb
+            </div>
+
+            <div class="info-box">
+                <h3>Уровни защиты</h3>
+                <ul>
+                    <li><strong>Сетевой уровень:</strong> Firewall блокирует все входящие подключения кроме разрешенных</li>
+                    <li><strong>Транспортный уровень:</strong> SSL/TLS шифрование всего трафика</li>
+                    <li><strong>Application уровень:</strong> Rate limiting, JWT auth, input validation</li>
+                    <li><strong>Уровень данных:</strong> SQL injection защита через Prisma, bcrypt для паролей</li>
+                </ul>
+            </div>
+
+            <h3>Конфигурация портов</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Сервис</th>
+                        <th>Порт</th>
+                        <th>Доступ</th>
+                        <th>Защита</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Nginx</td>
+                        <td>443</td>
+                        <td><span class="badge danger">Внешний</span></td>
+                        <td>SSL/TLS, Firewall</td>
+                    </tr>
+                    <tr>
+                        <td>Gateway</td>
+                        <td>30002</td>
+                        <td><span class="badge success">localhost only</span></td>
+                        <td>Rate Limit, Helmet</td>
+                    </tr>
+                    <tr>
+                        <td>Backend</td>
+                        <td>3001</td>
+                        <td><span class="badge success">localhost only</span></td>
+                        <td>JWT, Validation</td>
+                    </tr>
+                    <tr>
+                        <td>Frontend</td>
+                        <td>3000</td>
+                        <td><span class="badge success">localhost only</span></td>
+                        <td>CORS</td>
+                    </tr>
+                    <tr>
+                        <td>PostgreSQL</td>
+                        <td>5432</td>
+                        <td><span class="badge success">localhost only</span></td>
+                        <td>Password, Firewall</td>
+                    </tr>
+                    <tr>
+                        <td>Redis</td>
+                        <td>6379</td>
+                        <td><span class="badge success">localhost only</span></td>
+                        <td>Password, Firewall</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Deployment Diagram -->
+        <div id="deployment" class="diagram-container">
+            <h2>Процесс деплоймента и CI/CD</h2>
+            <div class="mermaid">
+graph LR
+    Dev[💻 Development]
+    GitHub[📦 GitHub]
+    Actions[⚙️ GitHub Actions<br/>Lint + Test + Build]
+
+    subgraph "Deployment Options"
+        Docker[🐳 Docker Compose]
+        PM2[🔄 PM2 Cluster]
+        Cloud[☁️ Cloud Platforms]
+    end
+
+    subgraph "Production"
+        Nginx[Nginx]
+        App[Applications]
+        DB[(Databases)]
+    end
+
+    Dev -->|git push| GitHub
+    GitHub -->|trigger| Actions
+    Actions -->|success| Docker
+    Actions -->|success| PM2
+    Actions -->|success| Cloud
+
+    Docker --> Nginx
+    PM2 --> Nginx
+    Cloud --> Nginx
+
+    Nginx --> App
+    App --> DB
+            </div>
+
+            <div class="tech-stack">
+                <div class="tech-card">
+                    <h4>🐳 Docker Deployment</h4>
+                    <ul>
+                        <li>docker-compose.yml</li>
+                        <li>Multi-container setup</li>
+                        <li>Health checks</li>
+                        <li>Volume persistence</li>
+                        <li>Network isolation</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h4>🔄 PM2 Deployment</h4>
+                    <ul>
+                        <li>ecosystem.config.js</li>
+                        <li>Cluster mode</li>
+                        <li>Auto-restart</li>
+                        <li>Log management</li>
+                        <li>Max instances</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h4>☁️ Cloud Deployment</h4>
+                    <ul>
+                        <li>Railway (auto-deploy)</li>
+                        <li>Vercel (frontend)</li>
+                        <li>Heroku (full-stack)</li>
+                        <li>AWS ECS/EB</li>
+                        <li>GCP Cloud Run</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h4>⚙️ CI/CD Pipeline</h4>
+                    <ul>
+                        <li>Automated linting</li>
+                        <li>Unit & integration tests</li>
+                        <li>Security audit</li>
+                        <li>Build verification</li>
+                        <li>Auto-deployment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scaling Diagram -->
+        <div id="scaling" class="diagram-container">
+            <h2>Горизонтальное масштабирование</h2>
+            <div class="mermaid">
+graph TB
+    LB[⚖️ Load Balancer]
+
+    subgraph "Gateway Layer"
+        GW1[Gateway 1]
+        GW2[Gateway 2]
+    end
+
+    subgraph "Backend Layer"
+        BE1[Backend 1]
+        BE2[Backend 2]
+        BE3[Backend 3]
+    end
+
+    subgraph "Data Layer"
+        Primary[(PostgreSQL Primary)]
+        Replica[(PostgreSQL Replica)]
+        RedisCluster[Redis Cluster<br/>3 masters + 3 replicas]
+    end
+
+    LB --> GW1
+    LB --> GW2
+
+    GW1 --> BE1
+    GW1 --> BE2
+    GW2 --> BE2
+    GW2 --> BE3
+
+    BE1 --> Primary
+    BE2 --> Replica
+    BE3 --> Replica
+
+    BE1 --> RedisCluster
+    BE2 --> RedisCluster
+    BE3 --> RedisCluster
+
+    style LB fill:#48dbfb
+    style Primary fill:#95e1d3
+    style RedisCluster fill:#f38181
+            </div>
+
+            <div class="info-box">
+                <h3>Стратегия масштабирования</h3>
+                <ul>
+                    <li><strong>Gateway:</strong> 2+ экземпляра для обработки входящего трафика</li>
+                    <li><strong>Backend:</strong> PM2 cluster mode с max instances (по числу CPU cores)</li>
+                    <li><strong>PostgreSQL:</strong> Master-Replica репликация для read scaling</li>
+                    <li><strong>Redis:</strong> Cluster setup с 3 мастерами и 3 репликами</li>
+                    <li><strong>Load Balancer:</strong> Nginx или облачный LB для распределения нагрузки</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Technology Stack -->
+        <div id="tech" class="diagram-container">
+            <h2>Полный технологический стек</h2>
+
+            <div class="tech-stack">
+                <div class="tech-card">
+                    <h4>⚛️ Frontend</h4>
+                    <ul>
+                        <li>React 18</li>
+                        <li>TypeScript</li>
+                        <li>Vite (build tool)</li>
+                        <li>Tailwind CSS</li>
+                        <li>React Router</li>
+                        <li>Axios</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h4>🔧 Backend</h4>
+                    <ul>
+                        <li>Node.js 18+</li>
+                        <li>Express.js</li>
+                        <li>Prisma ORM</li>
+                        <li>Socket.IO</li>
+                        <li>JWT Auth</li>
+                        <li>bcrypt</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h4>🗄️ Databases</h4>
+                    <ul>
+                        <li>PostgreSQL 15+</li>
+                        <li>Redis 7+</li>
+                        <li>Prisma Migrations</li>
+                        <li>Connection Pooling</li>
+                        <li>Pub/Sub messaging</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h4>🛡️ Security</h4>
+                    <ul>
+                        <li>Helmet.js</li>
+                        <li>Express Rate Limit</li>
+                        <li>iptables/pfctl</li>
+                        <li>Let's Encrypt SSL</li>
+                        <li>CORS</li>
+                        <li>Input Validation</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h4>📊 Monitoring</h4>
+                    <ul>
+                        <li>Sentry</li>
+                        <li>PM2 Monitoring</li>
+                        <li>Health Checks</li>
+                        <li>Access Logs</li>
+                        <li>Error Tracking</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h4>🚀 DevOps</h4>
+                    <ul>
+                        <li>Docker & Docker Compose</li>
+                        <li>PM2 Process Manager</li>
+                        <li>Nginx</li>
+                        <li>GitHub Actions</li>
+                        <li>Automated Testing</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mermaid">
+graph TB
+    subgraph "Frontend Layer"
+        React[React + TypeScript]
+        Vite[Vite]
+        Tailwind[Tailwind CSS]
+    end
+
+    subgraph "Backend Layer"
+        Express[Express.js]
+        Prisma[Prisma ORM]
+        SocketIO[Socket.IO]
+    end
+
+    subgraph "Database Layer"
+        Postgres[PostgreSQL]
+        RedisDB[Redis]
+    end
+
+    subgraph "Infrastructure"
+        Docker[Docker]
+        PM2[PM2]
+        Nginx[Nginx]
+    end
+
+    React --> Express
+    Express --> Prisma
+    Prisma --> Postgres
+    Express --> RedisDB
+    SocketIO --> RedisDB
+
+    Docker -.contains.-> Express
+    PM2 -.manages.-> Express
+    Nginx -.proxies.-> Express
+            </div>
+        </div>
+
+        <!-- Ports and Access -->
+        <div id="ports" class="diagram-container">
+            <h2>Порты, доступ и endpoints</h2>
+
+            <h3>Конфигурация портов</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Сервис</th>
+                        <th>Порт</th>
+                        <th>Доступ</th>
+                        <th>Назначение</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🔒 Nginx (HTTPS)</td>
+                        <td>443</td>
+                        <td><span class="badge danger">Внешний</span></td>
+                        <td>Основной вход в production</td>
+                    </tr>
+                    <tr>
+                        <td>🔒 Nginx (HTTP)</td>
+                        <td>80</td>
+                        <td><span class="badge warning">Внешний</span></td>
+                        <td>Редирект на HTTPS</td>
+                    </tr>
+                    <tr>
+                        <td>🛡️ API Gateway</td>
+                        <td>30002</td>
+                        <td><span class="badge success">localhost</span></td>
+                        <td>Единственная точка входа</td>
+                    </tr>
+                    <tr>
+                        <td>⚛️ React Frontend</td>
+                        <td>3000</td>
+                        <td><span class="badge success">localhost</span></td>
+                        <td>Dev server / Static files</td>
+                    </tr>
+                    <tr>
+                        <td>🔧 Backend API</td>
+                        <td>3001</td>
+                        <td><span class="badge success">localhost</span></td>
+                        <td>REST API + WebSocket</td>
+                    </tr>
+                    <tr>
+                        <td>📚 Documentation</td>
+                        <td>3002</td>
+                        <td><span class="badge success">localhost</span></td>
+                        <td>Interactive API docs</td>
+                    </tr>
+                    <tr>
+                        <td>🗄️ PostgreSQL</td>
+                        <td>5432</td>
+                        <td><span class="badge success">localhost</span></td>
+                        <td>Main database</td>
+                    </tr>
+                    <tr>
+                        <td>⚡ Redis</td>
+                        <td>6379</td>
+                        <td><span class="badge success">localhost</span></td>
+                        <td>Cache + Pub/Sub</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Основные API Endpoints</h3>
+            <div class="tech-stack">
+                <div class="tech-card">
+                    <h4>🔐 Authentication</h4>
+                    <ul>
+                        <li>POST /api/auth/register</li>
+                        <li>POST /api/auth/login</li>
+                        <li>POST /api/auth/logout</li>
+                        <li>GET /api/auth/profile</li>
+                        <li>PUT /api/auth/profile</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h4>📝 Habits</h4>
+                    <ul>
+                        <li>GET /api/habits</li>
+                        <li>POST /api/habits</li>
+                        <li>GET /api/habits/:id</li>
+                        <li>PUT /api/habits/:id</li>
+                        <li>DELETE /api/habits/:id</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h4>📊 KPI</h4>
+                    <ul>
+                        <li>GET /api/kpi</li>
+                        <li>GET /api/kpi/calculate</li>
+                        <li>GET /api/kpi/history</li>
+                        <li>GET /api/kpi/trends</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h4>👥 Teams</h4>
+                    <ul>
+                        <li>GET /api/teams</li>
+                        <li>POST /api/teams</li>
+                        <li>GET /api/teams/:id</li>
+                        <li>POST /api/teams/:id/invite</li>
+                        <li>DELETE /api/teams/:id</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h4>🔍 Monitoring</h4>
+                    <ul>
+                        <li>GET /api/health</li>
+                        <li>GET /api/health/detailed</li>
+                        <li>GET /health (Gateway)</li>
+                    </ul>
+                </div>
+
+                <div class="tech-card">
+                    <h4>🔌 WebSocket Events</h4>
+                    <ul>
+                        <li>habit:created</li>
+                        <li>habit:updated</li>
+                        <li>kpi:calculated</li>
+                        <li>team:updated</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>KPI Productivity GitHub Release</strong></p>
+            <p>Визуализация архитектуры системы | v1.0.0 | 2026-01-13</p>
+            <p style="margin-top: 10px; opacity: 0.8;">Создано с использованием Mermaid.js</p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        function showDiagram(diagramId) {
+            // Hide all diagrams
+            document.querySelectorAll('.diagram-container').forEach(container => {
+                container.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected diagram
+            document.getElementById(diagramId).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

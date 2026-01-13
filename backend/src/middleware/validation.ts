@@ -27,7 +27,7 @@ export const validate = (schema: ZodSchema, target: ValidationTarget = 'body') =
     } catch (error) {
       if (error instanceof ZodError) {
         // Форматируем ошибки Zod в понятный формат
-        const errors = error.errors.map(err => ({
+        const errors = error.issues.map(err => ({
           field: err.path.join('.'),
           message: err.message,
           code: err.code

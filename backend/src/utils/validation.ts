@@ -259,7 +259,7 @@ export function validateSkillTest(data: {
   } catch (error: any) {
     return {
       isValid: false,
-      errors: error.errors?.map((err: any) => ({
+      errors: error.issues?.map((err: any) => ({
         field: err.path.join('.'),
         message: err.message,
         code: err.code
