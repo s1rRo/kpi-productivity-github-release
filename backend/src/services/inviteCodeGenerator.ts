@@ -129,8 +129,10 @@ export class InviteCodeGenerator {
 
   /**
    * Generate a short-lived verification code (6 digits)
+   * Uses cryptographically secure random number generation
    */
   static generateVerificationCode(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate cryptographically secure 6-digit code
+    return crypto.randomInt(100000, 1000000).toString();
   }
 }

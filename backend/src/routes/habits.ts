@@ -3,6 +3,7 @@ import { prisma } from '../index';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { validationSchemas, validateBusinessRules } from '../utils/validation';
 import { DEFAULT_HABITS, HabitChanges } from '../types';
+import { generateSecureId } from '../utils/security';
 
 const router = express.Router();
 
@@ -25,9 +26,9 @@ async function logHabitHistory(habitId: string, action: 'created' | 'updated' | 
   }
 }
 
-// Helper function to generate ID (simple implementation)
+// Helper function to generate ID (cryptographically secure)
 function generateId(): string {
-  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+  return generateSecureId();
 }
 
 // Helper function to check if habit has associated data
