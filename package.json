@@ -17,6 +17,7 @@
     "test": "npm run test:backend && npm run test:gateway",
     "test:backend": "cd backend && npm test",
     "test:gateway": "cd gateway && npm test",
+    "test:security": "ваша-команда-для-безопасности",
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install && cd ../gateway && npm install && cd ../docs/interactive && npm install",
     "start": "concurrently \"npm run start:backend\" \"npm run start:gateway\"",
     "start:backend": "cd backend && npm start",
