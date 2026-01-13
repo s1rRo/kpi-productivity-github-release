@@ -86,8 +86,18 @@ jobs:
       with:
         languages: ${{ matrix.language }}
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install dependencies (without building)
+      run: |
+        npm ci --ignore-scripts || true
+        cd backend && npm ci --ignore-scripts || true
+        cd ../gateway && npm ci --ignore-scripts || true
+        cd ../docs/interactive && npm ci --ignore-scripts || true
+      continue-on-error: true
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
