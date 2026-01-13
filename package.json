@@ -26,6 +26,11 @@
     "docs:deploy": "cd docs/interactive && npm run docs:deploy",
     "security:test": "cd gateway && npm run test:security",
     "security:audit": "npm audit --audit-level moderate",
+    "security:audit:all": "npm audit && cd backend && npm audit && cd ../frontend && npm audit && cd ../gateway && npm audit && cd ../docs/interactive && npm audit",
+    "security:fix": "./scripts/fix-security.sh",
+    "deps:outdated": "npm outdated; cd backend && npm outdated; cd ../frontend && npm outdated; cd ../gateway && npm outdated; cd ../docs/interactive && npm outdated",
+    "deps:lockfiles": "./scripts/generate-lockfiles.sh",
+    "deps:update:minor": "./scripts/update-minor-versions.sh",
     "deploy:staging": "./scripts/deploy-staging.sh",
     "deploy:production": "./scripts/deploy-production.sh"
   },
