@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # CLAUDE.md: Инструкции для Claude Code в проекте KPI Productivity GitHub Release
 
 ## Обзор проекта
-Это full-stack система для отслеживания продуктивности: мониторинг привычек, расчет KPI, командная коллаборация, аналитика и реал-тайм мониторинг. Включает backend (Node.js/Express с Prisma и PostgreSQL), frontend (React/TypeScript с Vite и Tailwind), API-гейтвей для безопасности и интерактивную документацию. Текущий статус: в разработке, с фокусом на безопасность, производительность и CI/CD.
+Это full-stack система для отслеживания продуктивности: мониторинг привычек, расчет KPI, командная коллаборация, аналитика и реал-тайм мониторинг. Включает backend (Node.js/Express с Prisma и PostgreSQL), frontend (React/TypeScript с Vite и Tailwind), mobile app (React Native с Expo), API-гейтвей для безопасности и интерактивную документацию. Текущий статус: в разработке, с фокусом на безопасность, производительность и CI/CD.
 
 ## Цели
 - Обеспечить трекинг привычек и автоматический расчет KPI.
@@ -27,6 +27,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Структура файлов
 - backend/: Node.js/Express API с Prisma и PostgreSQL.
 - frontend/: React/TypeScript UI с Vite и Tailwind.
+- mobile/: React Native мобильное приложение с Expo и TypeScript.
 - gateway/: API-гейтвей с middleware для безопасности.
 - docs/interactive/: Сервер для интерактивных доков.
 - .github/workflows/: CI/CD пайплайны.
@@ -38,6 +39,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Стек технологий
 - Backend: Node.js 18+, Express, Prisma, PostgreSQL 15+, Redis 7+, Socket.IO, JWT, Sentry.
 - Frontend: React, TypeScript, Vite, Tailwind CSS, React Router, Axios.
+- Mobile: React Native, Expo, TypeScript, React Navigation, AsyncStorage, Axios.
 - Gateway: Node.js с Helmet и rate-limit.
 - DevOps: Docker-Compose, PM2, iptables/pfctl, Nginx + Certbot.
 - CI/CD: GitHub Actions.
@@ -45,11 +47,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Инструкции по установке
 1. Клонируй репозиторий: `git clone https://github.com/s1rRo/kpi-productivity-github-release.git && cd kpi-productivity-github-release`.
-2. Установи зависимости в каждом подпроекте: `cd backend && npm ci`, аналогично для frontend, gateway и docs/interactive.
+2. Установи зависимости в каждом подпроекте: `cd backend && npm ci`, аналогично для frontend, gateway, mobile и docs/interactive.
 3. Скопируй .env-файлы: `cp backend/.env.example backend/.env` и заполни значения (аналогично для других).
 4. Миграции БД: `cd backend && npm run db:migrate && npm run db:seed`.
 5. Запуск в dev: Открой отдельные терминалы для `npm run dev` в backend (порт 3001), frontend (3000), gateway (30002), docs (3002).
-6. Доступ: UI на localhost:3000, API на 3001, гейтвей на 30002.
+6. Мобильное приложение: `cd mobile && npm start` (требуется Expo Go на устройстве или эмулятор).
+7. Доступ: UI на localhost:3000, API на 3001, гейтвей на 30002, mobile через Expo Go.
 
 ## Workflow разработки
 - Тесты: `npm test` в backend, gateway, frontend.
@@ -100,3 +103,5 @@ MIT — см. LICENSE.
 - Docker: `docker-compose up -d`.
 - PM2: `pm2 restart ecosystem.config.js`.
 - Логи: `pm2 logs`.
+- Mobile: `cd mobile && npm start` (или `npm run android/ios`).
+- Mobile тестирование: см. `mobile/TESTING.md` для подробных инструкций.

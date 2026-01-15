@@ -1,0 +1,8 @@
+# This file ensures the assets directory is tracked by git
+# Replace with actual assets before production build
+
+# You can download placeholder assets from:
+# https://via.placeholder.com/1024x1024.png/007AFF/FFFFFF?text=KPI
+
+# Or use Expo's default assets by running:
+# npx expo prebuild --clean
