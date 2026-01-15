@@ -40,12 +40,17 @@ export class SocketService {
     this.io.use(async (socket: AuthenticatedSocket, next) => {
       try {
         const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.replace('Bearer ', '');
-        
+
         if (!token) {
           return next(new Error('Authentication token required'));
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret') as any;
+        if (!process.env.JWT_SECRET) {
+          console.error('CRITICAL: JWT_SECRET environment variable is not set');
+          return next(new Error('Server configuration error'));
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET) as any;
         
         // Get user details from database
         const user = await this.prisma.user.findUnique({

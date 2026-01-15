@@ -53,6 +53,21 @@ let socketService: SocketService;
 
 // Run migrations and initialize services on startup
 async function initializeApp() {
+  // Validate critical environment variables
+  if (!process.env.JWT_SECRET) {
+    console.error('💥 CRITICAL: JWT_SECRET environment variable is not set');
+    console.error('⚠️  JWT_SECRET is required for authentication security');
+    process.exit(1);
+  }
+
+  if (process.env.JWT_SECRET.length < 32) {
+    console.error('💥 CRITICAL: JWT_SECRET must be at least 32 characters long for security');
+    console.error(`⚠️  Current length: ${process.env.JWT_SECRET.length} characters`);
+    process.exit(1);
+  }
+
+  console.log('✅ JWT_SECRET validated');
+
   try {
     console.log('🔄 Running database migrations...');
     await runMigrations();
